@@ -1,0 +1,1105 @@
+openapi: 3.0.0
+info:
+  title: "AW Project"
+  description: "An API about meat."
+  version: "1.0.0"
+
+servers:
+  - url: "/api"
+tags:
+  - name: products
+    description: Produtos da aplicação
+  - name: myProducts
+    description: Gestão dos produtos do utilizador
+  - name: news
+    description: Noticias relacionadas com produtos animais
+  - name: statistics
+    description: Estatísticas relacionadas com criação, produção e consumo de animais
+  - name: supermarket
+    description: Informação sobre supermercados
+  - name: feedback
+    description: Gestão dos feedbacks dados aos produtos pelos utilizadores
+  - name: authentication
+    description: Autenticação do utilizador
+  
+components:   
+  schemas:
+    News:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Id of the news
+          readOnly: true
+        image:
+          type: string
+          description: Url of the image of the news
+        title:
+          type: string
+          description: Title of the news
+        content:
+          type: string
+          description: Content of the news
+        date:
+          type: string
+          description: Date of the news
+        publisher:
+          type: string
+          description: Publisher of the news
+          
+    Feedback:
+      type: object
+      properties:
+        feedback_id:
+          type: integer
+          description: Id of the feedback given
+        user_id:
+          type: integer
+          description: Id of the user 
+        username:
+          type: string
+          description: Username of the user
+        product_id:
+          type: integer
+          description: Id of the product
+        evaluation:
+          type: integer
+          description: Evaluation/feedback of the product
+          
+    User:
+      type: object
+      properties:
+        user_id:
+          type: integer
+          description: Id of the user
+        username:
+          type: string
+          description: Username of the user
+        password:
+          type: string
+          description: Password of the user
+        email:
+          type: string
+          description: Email of the user
+        status:
+          type: string
+          enum: [signed_in, signed_out]
+          description: Status of the user
+        list_feedback:
+          type: array
+          items: 
+            type: integer
+          description: Feedbacks given by the user
+        my_products:
+          type: array
+          items:
+            type: integer
+          description: List of products saved by the user
+    Product:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Id of the product
+          readOnly: true
+        image:
+          type: string
+          description: Url of the image of the product.
+        name:
+          type: string
+          description: Name of the product.
+        store:
+          type: string
+          description: Name of the store where the product is located (can be multiple).
+        producer:
+          type: string
+          description: Producer of the product.
+        food:
+          type: string
+          description: Diet of the animal when alive.
+        race:
+          type: string
+          description: Race of the animal.
+        origin:
+          type: string
+          description: Where the animal was raised.
+        age:
+          type: string
+          description: Age of the animal at the time of death .
+        price:
+          type: number
+          format: float
+          description: Cost of the product.
+          example: 10.99
+          minimum: 0
+      required:
+        - id
+        - image
+        - name
+        - store
+        - producer
+        - food
+        - race
+        - origin
+        - age
+        - price
+        
+    ExtraProduct:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Id of the product
+          readOnly: true
+        detailed_diet:
+          type: string
+          description: Detailed diet of the animal
+        establishment:
+          type: string
+          description: Place where the animal was raised
+        treatment:
+          type: string
+          description: Any type of treatments the animal was subject to when alive
+        life:
+          type: string
+          description: How the animal's life was
+        diseases:
+          type: string
+          description: Diseases the animal was subject to when alive
+        vet:
+          type: string
+          description: If the animal had a veterinary, and how frequently
+        death:
+          type: string
+          description: How the animal died
+      required:
+        - id
+        - detailed_diet
+        - establishment
+        - treatment
+        - life
+        - diseases
+        - vet
+        - death
+        
+    TableProduct:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Id of the product.
+          readOnly: true
+        desmame:
+          type: number
+          format: float.
+          description: Peso ao desmame.
+        abate:
+          type: number
+          format: float
+          description: Peso ao abate.
+        carcaca_weight:
+          type: number
+          format: float
+          description: Peso da carcaça.
+        carcaca_price:
+          type: number
+          format: float
+          description:  Rendimento da carcaça.
+        average_gains:
+          type: number
+          format: float
+          description: Average weight gained by the animal daily.
+        sale_price:
+          type: number
+          format: float
+          description: Price the animal was sold.
+        total_cost:
+          type: number
+          format: float
+          description: Cost of raising the animal.
+        gross_margin:
+          type: number
+          format: float
+          description: Margem Bruta.
+      required:
+        - desmame
+        - abate
+        - carcaca_weight
+        - carcaca_price
+        - average_gains
+        - sale_price
+        - total_cost
+        - gross_margin
+        
+    MyProducts:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: user identification
+        products:
+          type: array
+          items:
+                $ref: '#/components/schemas/Product'
+          description: Products stored in the user's product list
+    Stats:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Id of the statistic.
+          readOnly: true
+        num_value:
+          type: number
+          format: float
+          description: numeric value (percentage or not)
+        description:
+          type: string
+          description: description of the stat
+        type:
+          type: string
+          description: type
+        representation:
+          type: string
+          description: representation
+    Supermarket:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: id of the supermarket
+        name:
+          type: string
+          description: name of the supermarket
+        city:
+          type: string
+          description: city of the supermarket
+        latitude:
+          type: number
+          format: float
+          description: latitude of the supermarket
+        longitude:
+          type: number
+          format: float
+          description: longitude of the supermarket
+        description:
+          type: string
+          description: description of the supermarket
+    Categories:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: id of the category
+        name:
+          type: string
+          description: name of the category
+        image:
+          type: string
+          description: Url of the image of the category
+        products:
+          type: array
+          items:
+                $ref: '#/components/schemas/Product'
+          description: Products in this category
+paths:
+  /products:
+    get:
+      tags:
+        - products
+      summary: Ver todos os produtos.
+      description: Ver todos os produtos.
+      responses:
+        '200' :
+            description: Produtos buscados com sucesso.
+            content:
+              application/json:
+                schema:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/Product'
+        '404':
+            description: Erro ao buscar produtos.
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Descrição do erro.
+                      example: "Erro ao buscar produtos."
+  /products/{category}:
+    get:
+      tags:
+        - products
+      summary: Procurar produtos por categoria.
+      description: Procurar produtos por categoria.
+      parameters:
+      - name: category
+        in: path
+        required: true
+        description: categoria do produto.
+        schema:
+          type: string
+      responses:
+        '200' :
+            description: Produtos da categoria buscados com sucesso.
+            content:
+              application/json:
+                schema:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/Product'
+        '404':
+            description: Erro ao buscar produtos pela categoria.
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Descrição do erro.
+                      example: "Erro ao buscar produtos pela categoria."
+            
+  /products/{product_id}:
+    get:
+      tags:
+        - products
+      summary: Ver um produto
+      description: Ver um produto
+      parameters:
+        - name: product_id
+          in: path
+          required: true
+          description: id do produto
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Produto buscado com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        '404':
+            description: Erro ao buscar o produto.
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Descrição do erro.
+                      
+  /products/{product_id}/extra:
+    get:
+      tags:
+        - products
+      summary: Ver os detalhes extra de um produto.
+      description: Ver os detalhes extra de um produto.
+      parameters:
+        - name: product_id
+          in: path
+          required: true
+          description: id do produto
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Informação extra do Produto buscado com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExtraProduct'
+        '404':
+            description: Erro ao buscar a informacao extra.
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Descrição do erro.
+  /products/{product_id}/table:
+      get:
+        tags:
+          - products
+        summary: Ver a tabela de um produto.
+        description: Ver a tabela de um produto.
+        parameters:
+          - name: product_id
+            in: path
+            required: true
+            description: id do produto
+            schema:
+              type: integer
+        responses:
+          '200':
+            description: Tabela do Produto buscado com sucesso
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/TableProduct'
+          '404':
+            description: Erro ao buscar a tabela do produto.
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Descrição do erro.
+  /myProducts/{user_id}:
+    get:
+      tags:
+        - myProducts
+      summary: Ver os produtos guardados de um utilizador.
+      description:  Ver os produtos guardados de um utilizador.
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          description: id do utilizador
+          schema:
+            type: integer
+      responses:
+          '200':
+            description: Produtos do utilizador buscados com sucesso
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/MyProducts'
+          '404':
+            description: Erro ao buscar produtos do utilizador.
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Descrição do erro.
+    put:
+      tags:
+          - myProducts
+      summary: Ver os produtos guardados de um utilizador.
+      description:  Ver os produtos guardados de um utilizador.
+      requestBody:
+        description: Produto a adicionar à lista do utilizador
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Product'
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          description: id do utilizador
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Produto adicionado com sucesso.
+          content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    message:
+                      type: string
+        '404':
+          description: Utilizador não encontrado ou produto não adicionado
+          content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Descrição do erro.
+  
+  /myProducts/{user_id}/{product_id}:    
+    delete:
+      tags:
+        - myProducts
+      summary: Remover um determinado produto dos produtos guardados do utilizador.
+      description: Remover um determinado produto dos produtos guardados do utilizador
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          description: id do utilizador
+          schema:
+            type: integer
+        - name: product_id
+          in: path
+          required: true
+          description: id do produto
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Produto removido com sucesso.
+          content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    message:
+                      type: string
+        '404':
+          description: Utilizador não encontrado ou produto não removido
+          content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Descrição do erro.
+  /news:
+    get:
+      tags:
+        - news
+      summary: See multiple news
+      description: See multiple news
+      responses:
+        '200':
+          description: News shown with success
+          content:
+            application/json:
+              schema:
+                type: array
+                items: 
+                  $ref: '#/components/schemas/News'
+                
+  /news/{news_id}:
+    get:
+      tags:
+        - news
+      summary: Check a news
+      description: Check a news
+      parameters:
+        - name: news_id
+          in: path
+          required: true
+          description: id of the news
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: News retrieved with success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/News'
+        '404':
+          description: News not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Id of the news not found
+                    #example: "This news was not found."
+  /statistics/{stat_id}:
+    get:
+        tags:
+          - statistics
+        summary: Check a specific statistic
+        description: Check a specific statistic
+        parameters:
+          - name: stat_id
+            in: path
+            required: true
+            description: id of the statistic
+            schema:
+              type: integer
+        responses:
+          '200':
+            description: Stat retrieved with success
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/Stats'
+          '404':
+            description: Stat not found
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Id of the stat not found
+  /statistics/positive:
+    get:
+      tags:
+        - statistics
+      summary: Ver as estatisticas positivas.
+      description:  Ver as estatisticas positivas.
+      responses:
+        '200' :
+            description: Estatísticas positivas buscadas com sucesso.
+            content:
+              application/json:
+                schema:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/Stats'
+        '404':
+            description: Erro ao buscar as estatísticas positivas.
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Descrição do erro.
+                      example: "Erro ao buscar produtos."
+  /statistics/negative:
+    get:
+      tags:
+        - statistics
+      summary: Ver as estatisticas negativas.
+      description:  Ver as estatisticas negativas.
+      responses:
+        '200' :
+            description: Estatísticas negativas buscadas com sucesso.
+            content:
+              application/json:
+                schema:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/Stats'
+        '404':
+            description: Erro ao buscar as estatísticas negativas.
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Descrição do erro.
+  /supermarkets:
+    get:
+      tags:
+        - supermarket
+      summary: Ver todos os supermarkets.
+      description:  Ver todos os supermarkets.
+      responses:
+        '200' :
+            description: Supermercados buscados com sucessos.
+            content:
+              application/json:
+                schema:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/Supermarket'
+        '404':
+            description: Erro ao buscar os supermercados.
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Descrição do erro.
+  /supermarkets/{super_id}:
+    get:
+      tags:
+        - supermarket
+      parameters:
+        - name: super_id
+          in: path
+          required: true
+          description: id do supermercado
+          schema:
+            type: integer
+      summary: Ver todos os supermarkets.
+      description:  Ver todos os supermarkets.
+      responses:
+        '200' :
+            description: Supermercado buscado com sucessos.
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/Supermarket'
+        '404':
+            description: Erro ao buscar os supermercados.
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Descrição do erro.
+  /supermarkets/{super_id}/categories:
+    get:
+      tags:
+        - supermarket
+      parameters:
+        - name: super_id
+          in: path
+          required: true
+          description: id do supermercado
+          schema:
+            type: integer
+      summary: Ver as categorias dos supermercados.
+      description:  Ver as categorias dos supermercados.
+      responses:
+        '200' :
+            description: categorias do supermercado buscado com sucessos.
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/Categories'
+        '404':
+            description: Erro ao buscar as categorias dos supermercados.
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Descrição do erro.
+  /supermarkets/{super_id}/categories/{category}:
+    get:
+      tags:
+        - supermarket
+      parameters:
+        - name: super_id
+          in: path
+          required: true
+          description: id do supermercado
+          schema:
+            type: integer
+        - name: category
+          in: path
+          required: true
+          description: categoria do supermercado
+          schema:
+            type: string
+      summary: Ver os produtos de uma categoria dos supermercados.
+      description:  Ver os produtos de uma categoria dos supermercados.
+      responses:
+        '200' :
+            description: produtos da categoria do supermercado buscado com sucessos.
+            content:
+              application/json:
+                schema:
+                  type: array
+                  items:
+                     $ref: '#/components/schemas/Categories'
+        '404':
+            description: Erro ao buscar os produtos do supermercado.
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Descrição do erro.
+  /feedbacks:
+    get:
+      tags:
+        - feedback
+      summary: Check feedbacks
+      description: Check feedbacks
+      responses:
+        '200':
+          description: Feedbacks retrieved with success
+          content:
+            application/json:
+              schema:
+                type: array
+                items: 
+                  $ref: '#/components/schemas/Feedback'
+                  
+  /feedbacks/{feedback_id}:
+    get:
+      tags:
+        - feedback
+      summary: Check a specific feedback
+      description: Check a specific feedback
+      parameters:
+        - name: feedback_id
+          in: path
+          required: true
+          description: id of the feedback
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Feedback retrieved with success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Feedback'
+        '404':
+          description: Feedback not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Id of the feedback not found
+                    #example: "This feedback was not found."
+  /feedbacks/users/{user_id}:
+    get:
+      tags:
+        - feedback
+      summary: See feedbacks given by a specific user
+      description: See feedbacks given by a specific user
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          description: id of the user
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Feedbacks given by the user retrieved with success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Feedback'
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Id of the user not found
+                    #example: "This feedback was not found."
+  /feedbacks/products/{product_id}:
+    get:
+      tags:
+        - feedback
+      summary: See feedbacks of a specific product
+      description: See feedbacks of a specific product
+      parameters:
+        - name: product_id
+          in: path
+          required: true
+          description: id of the product
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Feedbacks given to the product retrieved with success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Feedback'
+        '404':
+          description: Product not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Id of the product not found
+                    #example: "This feedback was not found."
+    post:
+      tags:
+        - feedback
+      summary: Give feedback to a product
+      description: Give feedback to a product
+      requestBody:
+        description: Feedback of the product
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Feedback'
+      parameters:
+        - name: product_id
+          in: path
+          required: true
+          description: id of the product
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Feedback given with success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Feedback'
+        '404':
+          description: Product not found or feedback not given
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Id of product not found
+  /authentication/users:
+    get:
+      tags:
+        - authentication
+      summary: Check all users
+      description: Check all users
+      responses:
+        '200':
+          description: Users retrieved with success
+          content:
+            application/json:
+              schema:
+                type: array
+                items: 
+                  $ref: '#/components/schemas/User'
+                  
+    post:
+      tags:
+        - authentication
+      summary: Create user account
+      description: Create user account
+      requestBody:
+        description: user (?)
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '200':
+          description: User account created with success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '404':
+          description: User account not created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: account not created
+  
+  /authentication/users/{user_id}:
+    get:
+      tags:
+        - authentication
+      summary: Get a specific user
+      description: Get a specific user
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          description: id of the user
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: User retrieved with success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Id of the user not found
+                    #example: "This feedback was not found."
+    put:
+      tags:
+        - authentication
+      summary: Update user info
+      description: Update user info
+      requestBody:
+        description: info of the user
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          description: id of the user
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: User info updated with success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Id of user not found
+    
+    delete:
+      tags:
+        - authentication
+      summary: Delete user
+      description: Delete user
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          description: id of the user
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: User deleted with success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Id of user not found
+      
