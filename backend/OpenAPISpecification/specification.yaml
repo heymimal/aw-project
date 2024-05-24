@@ -27,6 +27,10 @@ components:
     News:
       type: object
       properties:
+        id:
+          type: integer
+          description: Id of the news
+          readOnly: true
         image:
           type: string
           description: Url of the image of the news
@@ -241,6 +245,10 @@ components:
     Stats:
       type: object
       properties:
+        id:
+          type: integer
+          description: Id of the statistic.
+          readOnly: true
         num_value:
           type: number
           format: float
@@ -280,12 +288,20 @@ components:
     Categories:
       type: object
       properties:
+        id:
+          type: integer
+          description: id of the category
         name:
           type: string
           description: name of the category
         image:
           type: string
           description: Url of the image of the category
+        products:
+          type: array
+          items:
+                $ref: '#/components/schemas/Product'
+          description: Products in this category
 paths:
   /products:
     get:
@@ -594,6 +610,36 @@ paths:
                     type: string
                     description: Id of the news not found
                     #example: "This news was not found."
+  /statistics/{stat_id}:
+    get:
+        tags:
+          - statistics
+        summary: Check a specific statistic
+        description: Check a specific statistic
+        parameters:
+          - name: stat_id
+            in: path
+            required: true
+            description: id of the statistic
+            schema:
+              type: integer
+        responses:
+          '200':
+            description: Stat retrieved with success
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/Stats'
+          '404':
+            description: Stat not found
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Id of the stat not found
   /statistics/positive:
     get:
       tags:
